@@ -16,6 +16,13 @@ export const register = async (req, res) => {
             return res.status(400).json({success: false, message: 'User already exists' });
         }
 
+        const lowerCaseUserName = userName.toLowerCase();
+
+        const userNameCheck = await User.findOne({ userName: lowerCaseUserName });
+        if (userNameCheck) {
+            return res.status(400).json({success: false, message: 'Username already exists' });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await User.create({
