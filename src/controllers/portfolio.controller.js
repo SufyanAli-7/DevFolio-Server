@@ -1,5 +1,6 @@
 import Portfolio from "../models/portfolio.model.js";
 import User from "../models/user.model.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 // 1. Get Logged-in User's Portfolio
 export const getPortfolio = async (req, res) => {
@@ -40,7 +41,11 @@ export const createPortfolio = async (req, res) => {
 
         let imagePath = "";
         if (req.files && req.files['image']) {
-            imagePath = `/temp/${req.files['image'][0].filename}`;
+            const uploadResult = await uploadOnCloudinary(req.files['image'][0].path);
+            if (!uploadResult) {
+                return res.status(400).json({ success: false, message: "Failed to upload image to Cloudinary" });
+            }
+            imagePath = uploadResult.secure_url;
         }
 
         let portfolio = await Portfolio.findOne({ userId });
@@ -56,7 +61,7 @@ export const createPortfolio = async (req, res) => {
             portfolio.github = github || portfolio.github;
             portfolio.linkedin = linkedin || portfolio.linkedin;
             portfolio.whatsapp = whatsapp || portfolio.whatsapp;
-            
+
             if (skills) {
                 portfolio.skills = parsedSkills;
             }
@@ -70,7 +75,7 @@ export const createPortfolio = async (req, res) => {
                 userId,
                 name,
                 role,
-                image: imagePath || "/temp/default-avatar.png",
+                image: imagePath || "https://res.cloudinary.com/demo/image/upload/d_avatar.png/avatar.png",
                 bio,
                 about,
                 skills: parsedSkills || [],
@@ -97,7 +102,12 @@ export const updatePersonalInfo = async (req, res) => {
 
         let imagePath = "";
         if (req.file) {
-            imagePath = `/temp/${req.file.filename}`;
+            const uploadResult = await uploadOnCloudinary(req.file.path);
+            if (!uploadResult) {
+                return res.status(400).json({ success: false, message: "Failed to upload image to Cloudinary" });
+            }
+            imagePath = uploadResult.secure_url;
+            console.log("imagePath", imagePath);
         }
 
         let portfolio = await Portfolio.findOne({ userId });
@@ -107,7 +117,7 @@ export const updatePersonalInfo = async (req, res) => {
                 userId,
                 name,
                 role,
-                image: imagePath || "/temp/default-avatar.png",
+                image: imagePath || "https://res.cloudinary.com/demo/image/upload/d_avatar.png/avatar.png",
                 bio,
                 about: "Welcome to my profile!",
                 skills: [],
@@ -249,9 +259,13 @@ export const addProject = async (req, res) => {
         const userId = req.id;
         const { title, description, tags, codeLink, liveLink } = req.body;
 
-        let imagePath = "/temp/default-project.png";
+        let imagePath = "https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg";
         if (req.file) {
-            imagePath = `/temp/${req.file.filename}`;
+            const uploadResult = await uploadOnCloudinary(req.file.path);
+            if (!uploadResult) {
+                return res.status(400).json({ success: false, message: "Failed to upload project cover to Cloudinary" });
+            }
+            imagePath = uploadResult.secure_url;
         }
 
         let portfolio = await Portfolio.findOne({ userId });
@@ -304,7 +318,11 @@ export const updateProject = async (req, res) => {
         }
 
         if (req.file) {
-            project.image = `/temp/${req.file.filename}`;
+            const uploadResult = await uploadOnCloudinary(req.file.path);
+            if (!uploadResult) {
+                return res.status(400).json({ success: false, message: "Failed to upload project cover to Cloudinary" });
+            }
+            project.image = uploadResult.secure_url;
         }
 
         await portfolio.save();
