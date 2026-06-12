@@ -107,7 +107,6 @@ export const updatePersonalInfo = async (req, res) => {
                 return res.status(400).json({ success: false, message: "Failed to upload image to Cloudinary" });
             }
             imagePath = uploadResult.secure_url;
-            console.log("imagePath", imagePath);
         }
 
         let portfolio = await Portfolio.findOne({ userId });
