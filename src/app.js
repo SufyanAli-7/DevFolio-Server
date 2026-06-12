@@ -6,10 +6,18 @@ import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import portfolioRoutes from './routes/portfolio.routes.js';
 
+import config from './config/config.js';
+
 const app = express();
 
+const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173'];
+if (config.FRONTEND_URL) {
+    const urls = config.FRONTEND_URL.split(',').map(url => url.trim());
+    allowedOrigins.push(...urls);
+}
+
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: allowedOrigins,
     credentials: true
 }));
 app.use(morgan('dev'));
