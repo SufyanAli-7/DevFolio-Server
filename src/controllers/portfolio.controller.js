@@ -256,7 +256,7 @@ export const deleteSkill = async (req, res) => {
 export const addProject = async (req, res) => {
     try {
         const userId = req.id;
-        const { title, description, tags, codeLink, liveLink } = req.body;
+        const { title, description, tags, codeLink, liveLink, category } = req.body;
 
         let imagePath = "https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg";
         if (req.file) {
@@ -280,7 +280,8 @@ export const addProject = async (req, res) => {
             image: imagePath,
             tags: parsedTags || [],
             codeLink,
-            liveLink
+            liveLink,
+            category: category || "Web Development"
         });
 
         await portfolio.save();
@@ -295,7 +296,7 @@ export const updateProject = async (req, res) => {
     try {
         const userId = req.id;
         const { projectId } = req.params;
-        const { title, description, tags, codeLink, liveLink } = req.body;
+        const { title, description, tags, codeLink, liveLink, category } = req.body;
 
         let portfolio = await Portfolio.findOne({ userId });
         if (!portfolio) {
@@ -311,6 +312,7 @@ export const updateProject = async (req, res) => {
         project.description = description || project.description;
         project.codeLink = codeLink || project.codeLink;
         project.liveLink = liveLink || project.liveLink;
+        project.category = category || project.category;
 
         if (tags) {
             project.tags = typeof tags === "string" ? JSON.parse(tags) : tags;

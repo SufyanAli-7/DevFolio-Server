@@ -64,6 +64,11 @@ const portfolioSchema = new Schema({
             liveLink: {
                 type: String,
                 required: true
+            },
+            category: {
+                type: String,
+                default: "Web Development",
+                trim: true
             }
         }
     ],
