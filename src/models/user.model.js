@@ -19,6 +19,14 @@ const userSchema = new Schema({
     password: { 
         type: String,
         required: true
+    },
+    resetOtp: {
+        type: String,
+        default: ''
+    },
+    resetOtpExpireAt: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true });
 
